@@ -1,0 +1,77 @@
+# ---- Build outputs ----
+**/build/
+**/out/
+bin/
+gen/
+
+# ---- Packages / artifacts ----
+*.apk
+*.ap_
+*.aab
+
+# ---- Compiled / generated classes ----
+*.dex
+*.class
+
+# ---- Gradle ----
+.gradle/
+buildSrc/.gradle/
+# Keep the Gradle wrapper checked in
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Local config (SDK path, etc.) — never commit
+local.properties
+
+# ---- Android/NDK externals ----
+obj/
+.externalNativeBuild/
+.cxx/
+
+# ---- Lint outputs ----
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# ---- ProGuard / R8 ----
+proguard/
+
+# ---- IDE files ----
+*.iml
+.idea/
+# If you prefer to keep some shared code style files, remove the blanket `.idea/` ignore
+# and un-ignore specific files (e.g., `.idea/codeStyles/Project.xml`) as needed.
+
+# ---- Logging / temp ----
+*.log
+
+# ---- Signing / credentials (keep these OUT of Git) ----
+*.jks
+*.keystore
+**/signing.properties
+keystore.properties
+
+# ---- Google / Firebase ----
+google-services.json
+.crashlytics/
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# ---- Fastlane ----
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md
+
+# ---- Misc editors / OS ----
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ---- Legacy / optional tools ----
+freeline.py
+freeline/
+freeline_project_description.json
