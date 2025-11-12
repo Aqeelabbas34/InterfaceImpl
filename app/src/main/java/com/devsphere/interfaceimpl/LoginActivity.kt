@@ -5,47 +5,45 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.devsphere.interfaceimpl.databinding.ActivityLoginBinding
-import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val db by lazy { FirebaseFirestore.getInstance() }
+    private lateinit var viewModel: LoginViewModel   // 👈 Declare variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // LOGIN: just navigate (no auth, no checks)
-        binding.btnLogin.setOnClickListener {
-            goToMain()
+        // ✅ Initialize ViewModel manually (old-school way)
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        // Observe LiveData
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.progress.visibility = if (isLoading) View.VISIBLE else View.INVISIBLE
+            binding.btnLogin.isEnabled = !isLoading
+            binding.btnRegister.isEnabled = !isLoading
         }
 
-        // REGISTER: add {name, email} to Firestore (auto doc id), then navigate
+        viewModel.isSuccess.observe(this) { success ->
+            if (success) {
+                Toast.makeText(this, "User registered successfully!", Toast.LENGTH_SHORT).show()
+                goToMain()
+            } else {
+                Toast.makeText(this, "Registration failed!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Click listeners
+        binding.btnLogin.setOnClickListener { goToMain() }
+
         binding.btnRegister.setOnClickListener {
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
-
-            if (name.isEmpty() || email.isEmpty()) {
-                toast("Name and email required")
-                return@setOnClickListener
-            }
-
-            setLoading(true)
-            val user = User(name = name, email = email)
-            db.collection("users")
-                .add(user)
-                .addOnSuccessListener {
-                    setLoading(false)
-                    toast("User saved")
-                    goToMain()
-                }
-                .addOnFailureListener { e ->
-                    setLoading(false)
-                    toast("Failed to save: ${e.localizedMessage}")
-                }
+            viewModel.registerUser(name, email)
         }
     }
 
@@ -53,12 +51,4 @@ class LoginActivity : AppCompatActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
-
-    private fun setLoading(loading: Boolean) {
-        binding.progress.visibility = if (loading) View.VISIBLE else View.INVISIBLE
-        binding.btnLogin.isEnabled = !loading
-        binding.btnRegister.isEnabled = !loading
-    }
-
-    private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }
